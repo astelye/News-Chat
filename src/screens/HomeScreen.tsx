@@ -3,10 +3,11 @@ import { View, Text, StyleSheet, SafeAreaView, StatusBar, ScrollView, TouchableO
 import { colors } from '../theme/colors';
 import { usePresence } from '../hooks/usePresence';
 import { useXpTracker } from '../hooks/useXpTracker';
-import { useUserListener } from '../hooks/useUserListener'; // Hook que observa o banco
-import { LevelUpModal } from '../components/LevelUpModal'; // Componente do Modal
+import { useUserListener } from '../hooks/useUserListener';
+import { LevelUpModal } from '../components/LevelUpModal';
 
-export const HomeScreen = () => {
+// Adicionamos { navigation } como prop para permitir a navegação
+export const HomeScreen = ({ navigation }: any) => {
   const [showModal, setShowModal] = useState(false);
   const [newLevel, setNewLevel] = useState(0);
 
@@ -14,7 +15,6 @@ export const HomeScreen = () => {
   usePresence();
   useXpTracker();
   
-  // O modal abre automaticamente se o hook detectar mudança de nível no Firestore
   useUserListener((level) => {
     setNewLevel(level);
     setShowModal(true);
@@ -36,7 +36,6 @@ export const HomeScreen = () => {
             <Text style={styles.username}>@ninja</Text>
             <Text style={styles.levelText}>Nível {newLevel > 0 ? newLevel : 42} • Diamante</Text>
 
-            {/* Barra de XP */}
             <View style={styles.xpBarBackground}>
               <View style={styles.xpBarFill} />
             </View>
@@ -46,7 +45,12 @@ export const HomeScreen = () => {
 
         {/* Menu de Ações Rápidas */}
         <View style={styles.actionGrid}>
-          <TouchableOpacity style={styles.actionCard} activeOpacity={0.8}>
+          {/* Botão de Navegação para o Chat */}
+          <TouchableOpacity 
+            style={styles.actionCard} 
+            activeOpacity={0.8}
+            onPress={() => navigation.navigate('Chat')}
+          >
             <Text style={styles.actionIcon}>💬</Text>
             <Text style={styles.actionText}>Chat</Text>
           </TouchableOpacity>
@@ -56,7 +60,12 @@ export const HomeScreen = () => {
             <Text style={styles.actionText}>Amigos</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.actionCard} activeOpacity={0.8}>
+          {/* Botão de Navegação para o Ranking */}
+          <TouchableOpacity 
+            style={styles.actionCard} 
+            activeOpacity={0.8}
+            onPress={() => navigation.navigate('Ranking')}
+          >
             <Text style={styles.actionIcon}>🏆</Text>
             <Text style={styles.actionText}>Ranking</Text>
           </TouchableOpacity>
@@ -77,7 +86,7 @@ export const HomeScreen = () => {
 
       </ScrollView>
 
-      {/* Modal de Level Up Integrado */}
+      {/* Modal de Level Up */}
       <LevelUpModal 
         visible={showModal} 
         level={newLevel} 
