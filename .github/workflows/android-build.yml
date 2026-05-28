@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Baixar o código do repositório
+      - name: Baixar o código
         uses: actions/checkout@v4
 
       - name: Configurar Node.js
@@ -25,19 +25,26 @@ jobs:
           distribution: 'zulu'
           java-version: '17'
 
-      - name: Instalar pacotes NPM
+      - name: Instalar dependências
         run: npm install
 
-      - name: Dar permissão ao Gradle
-        run: chmod +x android/gradlew
+      - name: Garantir que o google-services.json está no lugar
+        run: |
+          if [ -f android/app/google-services.json ]; then
+            echo "Arquivo encontrado!"
+          else
+            echo "Erro: google-services.json não encontrado em android/app/!"
+            exit 1
+          fi
 
-      - name: Gerar o arquivo APK (Release)
+      - name: Compilar APK
         run: |
           cd android
+          chmod +x gradlew
           ./gradlew assembleRelease
 
-      - name: Disponibilizar o APK para download
+      - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: App-Grupo-Android
+          name: App-NewsChat-Android
           path: android/app/build/outputs/apk/release/app-release.apk
