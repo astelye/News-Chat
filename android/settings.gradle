@@ -1,0 +1,3 @@
+rootProject.name = "NewsChat"
+
+include ':app'
