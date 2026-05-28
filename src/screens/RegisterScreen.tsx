@@ -1,46 +1,60 @@
-import React from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, SafeAreaView, StatusBar } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, SafeAreaView, Alert } from 'react-native';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '../services/firebaseConfig';
+import { createUserProfile } from '../services/userService';
 import { colors } from '../theme/colors';
 
-export const RegisterScreen = () => {
+export const RegisterScreen = ({ navigation }: any) => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [username, setUsername] = useState('');
+
+  const handleRegister = async () => {
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      await createUserProfile(userCredential.user.uid, username, email);
+      
+      Alert.alert('Sucesso', 'Bem-vindo ao NewsChat!');
+      navigation.replace('Home');
+    } catch (error) {
+      Alert.alert('Erro', 'Falha ao criar conta. Verifique os dados.');
+    }
+  };
+
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="light-content" backgroundColor={colors.background} />
-      
       <View style={styles.content}>
-        <Text style={styles.title}>NOVO JOGADOR</Text>
-        <Text style={styles.subtitle}>Crie sua conta no Grupo</Text>
-
-        <View style={styles.inputContainer}>
-          <TextInput 
-            style={styles.input}
-            placeholder="Seu ID (Ex: @ninja)"
-            placeholderTextColor={colors.textMuted}
-            autoCapitalize="none"
-          />
-          <TextInput 
-            style={styles.input}
-            placeholder="E-mail"
-            placeholderTextColor={colors.textMuted}
-            keyboardType="email-address"
-            autoCapitalize="none"
-          />
-          <TextInput 
-            style={styles.input}
-            placeholder="Senha"
-            placeholderTextColor={colors.textMuted}
-            secureTextEntry={true}
-          />
-        </View>
-
-        <TouchableOpacity style={styles.registerButton} activeOpacity={0.8}>
-          <Text style={styles.registerButtonText}>CADASTRAR</Text>
+        <Text style={styles.title}>CADASTRAR</Text>
+        
+        <TextInput 
+          style={styles.input} 
+          placeholder="Seu ID (@usuario)" 
+          placeholderTextColor={colors.textMuted} 
+          onChangeText={setUsername} 
+          autoCapitalize="none" 
+        />
+        <TextInput 
+          style={styles.input} 
+          placeholder="E-mail" 
+          placeholderTextColor={colors.textMuted} 
+          onChangeText={setEmail} 
+          autoCapitalize="none" 
+        />
+        <TextInput 
+          style={styles.input} 
+          placeholder="Senha" 
+          placeholderTextColor={colors.textMuted} 
+          secureTextEntry 
+          onChangeText={setPassword} 
+        />
+        
+        <TouchableOpacity style={styles.button} onPress={handleRegister}>
+          <Text style={styles.buttonText}>CRIAR CONTA</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.backButton}>
-          <Text style={styles.backText}>
-            Já tem uma conta? <Text style={styles.backTextHighlight}>Faça Login</Text>
-          </Text>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
+          <Text style={styles.backText}>Já tem conta? <Text style={{color: colors.primary}}>Faça Login</Text></Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>
@@ -48,74 +62,11 @@ export const RegisterScreen = () => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  content: {
-    flex: 1,
-    justifyContent: 'center',
-    paddingHorizontal: 30,
-  },
-  title: {
-    fontSize: 36,
-    fontWeight: 'bold',
-    color: colors.primary,
-    textAlign: 'center',
-    textShadowColor: 'rgba(0, 255, 204, 0.6)',
-    textShadowOffset: { width: 0, height: 0 },
-    textShadowRadius: 15,
-    letterSpacing: 2,
-    marginBottom: 10,
-  },
-  subtitle: {
-    fontSize: 16,
-    color: colors.textMuted,
-    textAlign: 'center',
-    marginBottom: 40,
-  },
-  inputContainer: {
-    gap: 15,
-    marginBottom: 30,
-  },
-  input: {
-    backgroundColor: colors.surface,
-    color: colors.textTitle,
-    height: 60,
-    borderRadius: 12,
-    paddingHorizontal: 20,
-    fontSize: 16,
-    borderWidth: 1,
-    borderColor: '#232328',
-  },
-  registerButton: {
-    backgroundColor: colors.primary,
-    height: 60,
-    borderRadius: 12,
-    justifyContent: 'center',
-    alignItems: 'center',
-    shadowColor: colors.primary,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 10,
-    elevation: 8,
-  },
-  registerButtonText: {
-    color: colors.background,
-    fontSize: 18,
-    fontWeight: 'bold',
-    letterSpacing: 2,
-  },
-  backButton: {
-    marginTop: 25,
-    alignItems: 'center',
-  },
-  backText: {
-    color: colors.textMuted,
-    fontSize: 14,
-  },
-  backTextHighlight: {
-    color: colors.primary,
-    fontWeight: 'bold',
-  },
+  container: { flex: 1, backgroundColor: colors.background },
+  content: { flex: 1, justifyContent: 'center', padding: 30 },
+  title: { fontSize: 32, fontWeight: 'bold', color: colors.primary, textAlign: 'center', marginBottom: 40 },
+  input: { backgroundColor: colors.surface, color: '#fff', height: 60, borderRadius: 12, paddingHorizontal: 20, marginBottom: 15 },
+  button: { backgroundColor: colors.primary, height: 60, borderRadius: 12, justifyContent: 'center', alignItems: 'center' },
+  buttonText: { color: '#0a0a0c', fontWeight: 'bold', fontSize: 16 },
+  backText: { color: colors.textMuted, textAlign: 'center', marginTop: 20 }
 });
