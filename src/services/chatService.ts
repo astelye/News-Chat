@@ -1,17 +1,52 @@
-import { collection, addDoc, query, orderBy, onSnapshot } from 'firebase/firestore';
+import { collection, addDoc, query, orderByChild, onSnapshot, QueryConstraint, orderBy, limit } from 'firebase/firestore';
 import { db } from './firebaseConfig';
+import { Timestamp } from 'firebase/firestore';
 
+interface Message {
+  id: string;
+  username: string;
+  text: string;
+  timestamp: any;
+}
+
+// Envia uma mensagem para o Firestore
 export const sendMessage = async (username: string, text: string) => {
-  await addDoc(collection(db, 'messages'), {
-    username,
-    text,
-    createdAt: new Date(),
-  });
+  try {
+    await addDoc(collection(db, 'messages'), {
+      username,
+      text,
+      timestamp: Timestamp.now(),
+    });
+  } catch (error) {
+    console.error('Erro ao enviar mensagem:', error);
+  }
 };
 
-export const subscribeToMessages = (callback: (msgs: any[]) => void) => {
-  const q = query(collection(db, 'messages'), orderBy('createdAt', 'desc'));
-  return onSnapshot(q, (snapshot) => {
-    callback(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
-  });
+// Inscreve-se às mensagens em tempo real
+export const subscribeToMessages = (callback: (messages: Message[]) => void) => {
+  try {
+    const q = query(
+      collection(db, 'messages'),
+      orderBy('timestamp', 'desc'),
+      limit(50)
+    );
+
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const messages: Message[] = [];
+      snapshot.forEach((doc) => {
+        messages.push({
+          id: doc.id,
+          username: doc.data().username,
+          text: doc.data().text,
+          timestamp: doc.data().timestamp,
+        });
+      });
+      callback(messages);
+    });
+
+    return unsubscribe;
+  } catch (error) {
+    console.error('Erro ao inscrever-se às mensagens:', error);
+    return () => {};
+  }
 };

@@ -1,18 +1,26 @@
 import { useEffect } from 'react';
-import { auth } from '../services/firebaseConfig';
-import { updateUserStatus } from '../services/presenceService';
+import { AppState, AppStateStatus } from 'react-native';
+import { updatePresence, removePresence } from '../services/presenceService';
 
 export const usePresence = () => {
   useEffect(() => {
-    const user = auth.currentUser;
-    if (user) {
-      // Quando o app abre, marca como online
-      updateUserStatus(user.uid, true);
+    // Define o usuário como online quando o app entra em foco
+    updatePresence(true);
 
-      // Quando o app fecha (ou componente desmonta), marca como offline
-      return () => {
-        updateUserStatus(user.uid, false);
-      };
-    }
+    // Monitora mudanças de estado do app
+    const subscription = AppState.addEventListener('change', handleAppStateChange);
+
+    return () => {
+      subscription.remove();
+      removePresence();
+    };
   }, []);
+
+  const handleAppStateChange = async (status: AppStateStatus) => {
+    if (status === 'active') {
+      await updatePresence(true);
+    } else if (status === 'background' || status === 'inactive') {
+      await removePresence();
+    }
+  };
 };

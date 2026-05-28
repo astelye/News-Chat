@@ -1,17 +1,22 @@
 import { useEffect } from 'react';
-import { auth } from '../services/firebaseConfig';
-import { addXp } from '../services/xpService';
+import { doc, onSnapshot } from 'firebase/firestore';
+import { auth, db } from '../services/firebaseConfig';
 
 export const useXpTracker = () => {
   useEffect(() => {
-    // Adiciona 10 XP a cada 60 segundos de uso
-    const interval = setInterval(() => {
-      const user = auth.currentUser;
-      if (user) {
-        addXp(user.uid, 10);
-      }
-    }, 60000);
+    const uid = auth.currentUser?.uid;
+    if (!uid) return;
 
-    return () => clearInterval(interval);
+    // Escuta mudanças no documento do usuário (XP e Level)
+    const unsubscribe = onSnapshot(doc(db, 'users', uid), (snapshot) => {
+      if (snapshot.exists()) {
+        const userData = snapshot.data();
+        console.log('XP atual:', userData.xp);
+        console.log('Level atual:', userData.level);
+        // Aqui você pode processar XP e level conforme necessário
+      }
+    });
+
+    return () => unsubscribe();
   }, []);
 };
