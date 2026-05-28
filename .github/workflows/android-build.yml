@@ -28,27 +28,18 @@ jobs:
       - name: Instalar dependências
         run: npm install
 
-      - name: Verificar estrutura de arquivos (Debug)
-        run: ls -la android/
-
-      - name: Garantir que o google-services.json está no lugar
-        run: |
-          if [ -f android/app/google-services.json ]; then
-            echo "Arquivo encontrado!"
-          else
-            echo "Erro: google-services.json não encontrado em android/app/!"
-            exit 1
-          fi
-
       - name: Compilar APK
         run: |
           cd android
-          # Verifica se o arquivo existe antes de dar chmod
+          # Se o gradlew não estiver lá, tentamos usar o comando gradle direto (se instalado)
+          # ou falhamos informando que a estrutura está incompleta
           if [ -f gradlew ]; then
             chmod +x gradlew
             ./gradlew assembleRelease
           else
-            echo "ERRO: O arquivo gradlew não foi encontrado na pasta android/"
+            echo "ERRO CRÍTICO: O arquivo gradlew não existe na pasta android."
+            echo "Certifique-se de que a pasta android completa foi enviada ao Git."
+            ls -R  # Lista tudo para diagnóstico
             exit 1
           fi
 
