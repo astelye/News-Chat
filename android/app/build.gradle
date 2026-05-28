@@ -1,26 +1,36 @@
 apply plugin: 'com.android.application'
-// Adicione esta linha no topo:
 apply plugin: 'com.google.gms.google-services'
 
 android {
+    namespace "com.newschat"
+
     compileSdkVersion 34
-    
+
     defaultConfig {
         applicationId "com.newschat.app"
-        minSdkVersion 21
+        minSdkVersion 23
         targetSdkVersion 34
         versionCode 1
         versionName "1.0"
     }
-    // ... restante do seu build.gradle
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            shrinkResources false
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
 }
 
 dependencies {
-    // Adicione a plataforma do Firebase e o Analytics:
     implementation platform('com.google.firebase:firebase-bom:33.0.0')
+
     implementation 'com.google.firebase:firebase-analytics'
     implementation 'com.google.firebase:firebase-auth'
     implementation 'com.google.firebase:firebase-firestore'
-    
-    // ... outras dependências que já existiam
 }
