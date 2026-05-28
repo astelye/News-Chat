@@ -1,8 +1,12 @@
 import React from 'react';
 import { View, Text, StyleSheet, SafeAreaView, StatusBar, ScrollView, TouchableOpacity } from 'react-native';
 import { colors } from '../theme/colors';
+import { usePresence } from '../hooks/usePresence';
 
 export const HomeScreen = () => {
+  // Ativa o monitoramento de status online ao entrar na tela
+  usePresence();
+
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="light-content" backgroundColor={colors.background} />
@@ -16,11 +20,9 @@ export const HomeScreen = () => {
           </View>
           
           <View style={styles.userInfo}>
-            {/* Nome com efeito Neon baseado no nível (Ex: Diamante = Azul) */}
             <Text style={styles.username}>@ninja</Text>
             <Text style={styles.levelText}>Nível 42 • Diamante</Text>
             
-            {/* Barra de XP */}
             <View style={styles.xpBarBackground}>
               <View style={styles.xpBarFill} />
             </View>
@@ -48,7 +50,6 @@ export const HomeScreen = () => {
 
         <Text style={styles.sectionTitle}>Amigos Online</Text>
         
-        {/* Placeholder de Amigo */}
         <View style={styles.friendCard}>
           <View style={styles.friendAvatar}>
             <Text style={styles.friendEmoji}>🦊</Text>
@@ -92,7 +93,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginRight: 15,
     borderWidth: 2,
-    borderColor: '#0066ff', // Borda nível Diamante
+    borderColor: '#0066ff',
   },
   avatarEmoji: {
     fontSize: 35,
@@ -103,7 +104,7 @@ const styles = StyleSheet.create({
   username: {
     fontSize: 22,
     fontWeight: 'bold',
-    color: '#00ccff', // Azul Neon
+    color: '#00ccff',
     textShadowColor: 'rgba(0, 204, 255, 0.6)',
     textShadowOffset: { width: 0, height: 0 },
     textShadowRadius: 10,
@@ -124,7 +125,7 @@ const styles = StyleSheet.create({
   },
   xpBarFill: {
     height: '100%',
-    width: '75%', // Preenchimento da barra
+    width: '75%',
     backgroundColor: colors.primary,
     shadowColor: colors.primary,
     shadowOffset: { width: 0, height: 0 },
