@@ -2,27 +2,30 @@ import React from 'react';
 import { View, Text, StyleSheet, SafeAreaView, StatusBar, ScrollView, TouchableOpacity } from 'react-native';
 import { colors } from '../theme/colors';
 import { usePresence } from '../hooks/usePresence';
+import { useXpTracker } from '../hooks/useXpTracker'; // Importação do hook de XP
 
 export const HomeScreen = () => {
-  // Ativa o monitoramento de status online ao entrar na tela
+  // Ativa o monitoramento de status online e o farm de XP
   usePresence();
+  useXpTracker();
 
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="light-content" backgroundColor={colors.background} />
-      
+
       <ScrollView contentContainerStyle={styles.scrollContent}>
-        
+
         {/* Cabeçalho do Jogador */}
         <View style={styles.header}>
           <View style={styles.avatarContainer}>
             <Text style={styles.avatarEmoji}>👻</Text>
           </View>
-          
+
           <View style={styles.userInfo}>
             <Text style={styles.username}>@ninja</Text>
             <Text style={styles.levelText}>Nível 42 • Diamante</Text>
-            
+
+            {/* Barra de XP */}
             <View style={styles.xpBarBackground}>
               <View style={styles.xpBarFill} />
             </View>
@@ -36,12 +39,12 @@ export const HomeScreen = () => {
             <Text style={styles.actionIcon}>💬</Text>
             <Text style={styles.actionText}>Chat</Text>
           </TouchableOpacity>
-          
+
           <TouchableOpacity style={styles.actionCard} activeOpacity={0.8}>
             <Text style={styles.actionIcon}>🎮</Text>
             <Text style={styles.actionText}>Amigos</Text>
           </TouchableOpacity>
-          
+
           <TouchableOpacity style={styles.actionCard} activeOpacity={0.8}>
             <Text style={styles.actionIcon}>🏆</Text>
             <Text style={styles.actionText}>Ranking</Text>
@@ -49,7 +52,7 @@ export const HomeScreen = () => {
         </View>
 
         <Text style={styles.sectionTitle}>Amigos Online</Text>
-        
+
         <View style={styles.friendCard}>
           <View style={styles.friendAvatar}>
             <Text style={styles.friendEmoji}>🦊</Text>
