@@ -2,20 +2,34 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, FlatList, StyleSheet, SafeAreaView } from 'react-native';
 import { colors } from '../theme/colors';
 import { sendMessage, subscribeToMessages } from '../services/chatService';
+import { auth } from '../services/firebaseConfig'; // Importe o auth
+import { getDoc, doc } from 'firebase/firestore'; // Importe para buscar o nome
+import { db } from '../services/firebaseConfig';
 
 export const ChatScreen = () => {
   const [messages, setMessages] = useState<any[]>([]);
   const [text, setText] = useState('');
+  const [username, setUsername] = useState('Anônimo');
 
   useEffect(() => {
-    // Escuta mensagens em tempo real
+    // 1. Busca o username real do usuário logado no Firestore
+    const fetchUserData = async () => {
+      const uid = auth.currentUser?.uid;
+      if (uid) {
+        const userDoc = await getDoc(doc(db, 'users', uid));
+        if (userDoc.exists()) setUsername(userDoc.data().username);
+      }
+    };
+    fetchUserData();
+
+    // 2. Escuta mensagens em tempo real
     const unsubscribe = subscribeToMessages((msgs) => setMessages(msgs));
     return () => unsubscribe();
   }, []);
 
   const handleSend = () => {
     if (text.trim()) {
-      sendMessage('@ninja', text); // Aqui você pode substituir pelo nome real do usuário logado
+      sendMessage(username, text); // Usa o nome real aqui
       setText('');
     }
   };
@@ -24,10 +38,11 @@ export const ChatScreen = () => {
     <SafeAreaView style={styles.container}>
       <FlatList
         data={messages}
-        inverted // Mostra a mensagem mais nova embaixo
+        inverted
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
-          <View style={styles.messageBubble}>
+          // Diferencia se a mensagem é do usuário logado (exibe à direita) ou não
+          <View style={[styles.messageBubble, item.username === username && styles.myMessage]}>
             <Text style={styles.username}>{item.username}</Text>
             <Text style={styles.text}>{item.text}</Text>
           </View>
@@ -42,7 +57,7 @@ export const ChatScreen = () => {
           onChangeText={setText}
         />
         <TouchableOpacity style={styles.sendButton} onPress={handleSend}>
-          <Text style={{color: '#fff'}}>Enviar</Text>
+          <Text style={{color: '#0a0a0c', fontWeight: 'bold'}}>Enviar</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>
@@ -51,8 +66,9 @@ export const ChatScreen = () => {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.background },
-  messageBubble: { backgroundColor: colors.surface, padding: 15, margin: 10, borderRadius: 12 },
-  username: { color: colors.primary, fontSize: 12, fontWeight: 'bold' },
+  messageBubble: { backgroundColor: colors.surface, padding: 15, margin: 10, borderRadius: 12, alignSelf: 'flex-start', maxWidth: '80%' },
+  myMessage: { backgroundColor: colors.primary, alignSelf: 'flex-end' }, // Estilo se for sua msg
+  username: { color: colors.textMuted, fontSize: 10, marginBottom: 5 },
   text: { color: '#fff', fontSize: 16 },
   inputContainer: { flexDirection: 'row', padding: 10, backgroundColor: colors.surface },
   input: { flex: 1, color: '#fff', paddingHorizontal: 15 },
