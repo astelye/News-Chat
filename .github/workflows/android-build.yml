@@ -31,20 +31,26 @@ jobs:
       - name: Compilar APK
         run: |
           cd android
-          # Se o gradlew não estiver lá, tentamos usar o comando gradle direto (se instalado)
-          # ou falhamos informando que a estrutura está incompleta
           if [ -f gradlew ]; then
             chmod +x gradlew
             ./gradlew assembleRelease
           else
             echo "ERRO CRÍTICO: O arquivo gradlew não existe na pasta android."
             echo "Certifique-se de que a pasta android completa foi enviada ao Git."
-            ls -R  # Lista tudo para diagnóstico
+            ls -R
             exit 1
           fi
+
+      - name: Organizar e Renomear o APK
+        run: |
+          mkdir -p output_apk
+          # Procura qualquer arquivo .apk gerado e copia para a pasta nova com o nome correto
+          find android/app/build/outputs/apk/ -name "*.apk" -exec cp {} output_apk/NewsChat.apk \;
+          echo "Conteúdo da pasta output_apk:"
+          ls output_apk/
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: App-NewsChat-Android
-          path: android/app/build/outputs/apk/release/app-release.apk
+          name: NewsChat-Android-Build
+          path: output_apk/NewsChat.apk
