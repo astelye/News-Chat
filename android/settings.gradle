@@ -1,6 +1,13 @@
 pluginManagement {
+    repositories {
+        mavenLocal()
+        maven { url("../node_modules/react-native/android") }
+        google()
+        mavenCentral()
+    }
     includeBuild("../node_modules/@react-native/gradle-plugin")
 }
+
 plugins {
     id("com.facebook.react.settings")
 }
