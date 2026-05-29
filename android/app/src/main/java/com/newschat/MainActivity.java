@@ -1,23 +1,27 @@
 package com.newschat;
 
-import android.os.Bundle;
-import androidx.appcompat.app.AppCompatActivity;
-import android.widget.TextView;
-import android.view.Gravity;
-import android.graphics.Color;
+import com.facebook.react.ReactActivity;
+import com.facebook.react.ReactActivityDelegate;
+import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint;
+import com.facebook.react.defaults.DefaultReactActivityDelegate;
 
-public class MainActivity extends AppCompatActivity {
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        
-        // Cria uma tela de teste simples para confirmar a instalação
-        TextView textView = new TextView(this);
-        textView.setText("NewsChat\nInicializado com Sucesso! 🎉");
-        textView.setTextSize(26);
-        textView.setTextColor(Color.BLACK);
-        textView.setGravity(Gravity.CENTER);
-        
-        setContentView(textView);
-    }
+public class MainActivity extends ReactActivity {
+
+  /**
+   * Retorna o nome do componente principal registrado no JavaScript.
+   * Isso deve ser exatamente o mesmo nome que está no seu app.json ('newschat').
+   */
+  @Override
+  protected String getMainComponentName() {
+    return "newschat";
+  }
+
+  @Override
+  protected ReactActivityDelegate createReactActivityDelegate() {
+    return new DefaultReactActivityDelegate(
+        this,
+        getMainComponentName(),
+        // Ativa a arquitetura padrão do React Native CLI 0.73
+        DefaultNewArchitectureEntryPoint.getFabricEnabled());
+  }
 }
