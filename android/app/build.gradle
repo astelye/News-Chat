@@ -1,5 +1,6 @@
-apply plugin: 'com.android.application'
-apply plugin: 'com.google.gms.google-services'
+apply plugin: "com.android.application"
+apply plugin: "com.facebook.react"
+apply plugin: "com.google.gms.google-services"
 
 android {
     namespace "com.newschat"
@@ -27,11 +28,11 @@ android {
     }
 }
 
-dependencies {
-    // React Native
-    implementation "com.facebook.react:react-android"
-    implementation "com.facebook.react:hermes-android"
+react {
+    // Configuração do React Native 0.73
+}
 
+dependencies {
     // Android
     implementation 'androidx.appcompat:appcompat:1.6.1'
 
