@@ -1,3 +1,10 @@
-rootProject.name = "NewsChat"
+pluginManagement {
+    includeBuild("../node_modules/@react-native/gradle-plugin")
+}
+plugins {
+    id("com.facebook.react.settings")
+}
 
+rootProject.name = "NewsChat"
 include ':app'
+includeBuild('../node_modules/@react-native/gradle-plugin')
