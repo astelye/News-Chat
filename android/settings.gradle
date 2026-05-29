@@ -1,17 +1,12 @@
-pluginManagement {
-    repositories {
-        mavenLocal()
-        maven { url("../node_modules/react-native/android") }
-        google()
-        mavenCentral()
-    }
+rootProject.name = "NewsChat"
+
+// Ensinamos ao Gradle onde encontrar o plugin local do React Native usando propriedades locais de segurança
+providers.gradleProperty('reactNativeAndroidRoot').isPresent() ? 
+    includeBuild(providers.gradleProperty('reactNativeAndroidRoot').get() + "/../@react-native/gradle-plugin") : 
     includeBuild("../node_modules/@react-native/gradle-plugin")
-}
 
 plugins {
     id("com.facebook.react.settings")
 }
 
-rootProject.name = "NewsChat"
 include ':app'
-includeBuild('../node_modules/@react-native/gradle-plugin')
