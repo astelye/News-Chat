@@ -33,7 +33,7 @@ jobs:
           cd android
           if [ -f gradlew ]; then
             chmod +x gradlew
-            ./gradlew assembleRelease
+            ./gradlew assembleDebug
           else
             echo "ERRO CRÍTICO: O arquivo gradlew não existe na pasta android."
             echo "Certifique-se de que a pasta android completa foi enviada ao Git."
@@ -44,10 +44,8 @@ jobs:
       - name: Organizar e Renomear o APK
         run: |
           mkdir -p output_apk
-          # Procura qualquer arquivo .apk gerado e copia para a pasta nova com o nome correto
-          find android/app/build/outputs/apk/ -name "*.apk" -exec cp {} output_apk/NewsChat.apk \;
-          echo "Conteúdo da pasta output_apk:"
-          ls output_apk/
+          # Comando corrigido: Copia diretamente o arquivo final correto
+          cp android/app/build/outputs/apk/debug/app-debug.apk output_apk/NewsChat.apk
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
