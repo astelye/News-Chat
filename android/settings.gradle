@@ -1,15 +1,7 @@
-pluginManagement {
-    repositories {
-        google()
-        mavenCentral()
-        gradlePluginPortal()
-    }
-    includeBuild("../node_modules/@react-native/gradle-plugin")
-}
-
-plugins {
-    id("com.facebook.react.settings")
-}
-
 rootProject.name = "NewsChat"
+
+// Inclui o aplicativo principal do projeto
 include ':app'
+
+// Cria a ponte direta com as configurações nativas locais do React Native sem depender de servidores de nuvem
+apply from: file("../node_modules/@react-native/gradle-plugin/settings.gradle")
